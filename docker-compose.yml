@@ -40,5 +40,5 @@ services:
       start_period: 40s
 
 networks:
-  external:
-    name: evolution-net
+  evolution-net:
+    driver: bridge
