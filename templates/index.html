@@ -124,7 +124,7 @@ aplicarMascaraDataHora(document.getElementById('data_fim'));
 async function carregarInstancias() {
     const select = document.getElementById('instancia-select');
     try {
-        const resp = await fetch('/api/instancias');
+        const resp = await fetch('/whatsapp/api/instancias');
         const instancias = await resp.json();
         select.innerHTML = '';
 
@@ -409,7 +409,7 @@ function enviarFormulario(event) {
         return;
     }
 
-    fetch('/api/enviar-lote', {
+    fetch('/whatsapp/api/enviar-lote', {
         method: 'POST',
         headers: {'Content-Type': 'application/json','Accept': 'application/json'},
         body: JSON.stringify({registros: registros, template: template, instancia: instanciaToken}),

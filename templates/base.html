@@ -350,7 +350,7 @@
     
     async function carregarTemplates() {
         try {
-            const response = await fetch('/api/templates');
+            const response = await fetch('/whatsapp/api/templates');
             const data = await response.json();
             
             const selectTemplate = document.getElementById('template-select');
@@ -385,7 +385,7 @@
         if (!templateId) return;
         
         try {
-            const response = await fetch(`/api/templates/${templateId}`);
+            const response = await fetch(`/whatsapp/api/templates/${templateId}`);
             const data = await response.json();
             
             if (data.success) {

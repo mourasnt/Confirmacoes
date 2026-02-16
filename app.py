@@ -6,6 +6,7 @@ from mensagem_sender import MensagemSender
 from database import Database
 import threading
 import requests
+import os
 # IMPORTANTE: Necessário para o Kong/Proxy Reverso
 from werkzeug.middleware.proxy_fix import ProxyFix 
 
@@ -20,6 +21,9 @@ app.secret_key = 'sua_chave_secreta_aqui_123'  # Mude para uma chave segura
 app.wsgi_app = ProxyFix(
     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
 )
+
+# Configure o SCRIPT_NAME para /whatsapp se estiver atrás do Kong
+os.environ.setdefault('SCRIPT_NAME', '/whatsapp')
 # ----------------------------------------------
 
 # Instância global do banco

@@ -71,7 +71,7 @@
                 numero: numero
             };
 
-            const resp = await fetch("/api/criar-instancia", {
+            const resp = await fetch("/whatsapp/api/criar-instancia", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -115,7 +115,7 @@
         const payload = { instancia: instancia_name };
 
         try {
-            const resp = await fetch("/api/get-qrcode", {
+            const resp = await fetch("/whatsapp/api/get-qrcode", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)

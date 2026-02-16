@@ -66,7 +66,7 @@
 function usarTemplate(templateId) {
     try {
         // Busca o conteúdo do template via fetch
-        fetch('/api/templates')
+        fetch('/whatsapp/api/templates')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
