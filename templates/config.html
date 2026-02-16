@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <h2>⚙️ Configurações</h2>
+    <div>
+        <a href="{{ url_for('index') }}" class="btn">← Voltar</a>
+    </div>
+</div>
+
+<form method="post">
+    <h3 style="color: #333; margin-top: 30px;">📊 Google Sheets</h3>
+    
+    <div class="form-group">
+        <label for="spreadsheet_id">ID da Planilha:</label>
+        <input type="text" id="spreadsheet_id" name="spreadsheet_id" 
+               value="{{ config.get('spreadsheet_id', '') }}" 
+               placeholder="Ex: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
+    </div>
+
+    <div class="form-group">
+        <label for="sheet_name">Nome da Aba:</label>
+        <input type="text" id="sheet_name" name="sheet_name" 
+               value="{{ config.get('sheet_name', '') }}" 
+               placeholder="Sheet1">
+    </div>
+
+    <div class="form-group">
+        <label for="header_row">Linha dos Cabeçalhos:</label>
+        <input type="number" id="header_row" name="header_row" 
+               value="{{ config.get('header_row', '1') }}" 
+               min="1" max="100"
+               placeholder="1">
+    </div>
+
+    <div class="form-group">
+        <label for="linha_inicio_dados">Linha inicial dos dados relevantes:</label>
+        <input type="number" id="linha_inicio_dados" name="linha_inicio_dados" 
+               value="{{ config.get('linha_inicio_dados', '') }}" 
+               placeholder="Linha inicial dos dados">
+    </div>
+
+    <h3 style="color: #333; margin-top: 30px;">📱 Evolution API</h3>
+    
+    <div class="form-group">
+        <label for="api_url">URL da API:</label>
+        <input type="url" id="api_url" name="api_url" 
+               value="{{ config.get('api_url', '') }}" 
+               placeholder="http://evolution_api:8080">
+    </div>
+
+    <div class="form-group">
+        <label for="instance">Instância:</label>
+        <input type="text" id="instance" name="instance" 
+               value="{{ config.get('instance', '') }}" 
+               placeholder="Spots">
+    </div>
+
+    <div class="form-group">
+        <label for="api_key">API Key:</label>
+        <input type="text" id="api_key" name="api_key" 
+               value="{{ config.get('api_key', '') }}" 
+               placeholder="Sua chave da API">
+    </div>
+
+    <h3 style="color: #333; margin-top: 30px;">💡 Mapeamento de Colunas</h3>
+    <p style="color: #6c757d; margin-bottom: 15px;">Configure os nomes das colunas na sua planilha Google Sheets:</p>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="form-group">
+            <label for="coluna_id">ID 3ZX (Identificador):</label>
+            <input type="text" id="coluna_id" name="coluna_id" 
+                   value="{{ config.get('coluna_id', 'ID 3ZX') }}" 
+                   placeholder="ID 3ZX">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_lt">LT (Número da Carga):</label>
+            <input type="text" id="coluna_lt" name="coluna_lt" 
+                   value="{{ config.get('coluna_lt', 'N° Carga') }}" 
+                   placeholder="N° Carga">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_cliente">Cliente:</label>
+            <input type="text" id="coluna_cliente" name="coluna_cliente" 
+                   value="{{ config.get('coluna_cliente', 'Cliente') }}" 
+                   placeholder="Cliente">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_motorista">Motorista:</label>
+            <input type="text" id="coluna_motorista" name="coluna_motorista" 
+                   value="{{ config.get('coluna_motorista', 'Motorista') }}" 
+                   placeholder="Motorista">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_telefone">Telefone:</label>
+            <input type="text" id="coluna_telefone" name="coluna_telefone" 
+                   value="{{ config.get('coluna_telefone', 'Telefone') }}" 
+                   placeholder="Telefone">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_origem">Origem:</label>
+            <input type="text" id="coluna_origem" name="coluna_origem" 
+                   value="{{ config.get('coluna_origem', 'Origem') }}" 
+                   placeholder="Origem">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_destino">Destino:</label>
+            <input type="text" id="coluna_destino" name="coluna_destino" 
+                   value="{{ config.get('coluna_destino', 'Destino') }}" 
+                   placeholder="Destino">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_eta">ETA Origem (Data/Hora):</label>
+            <input type="text" id="coluna_eta" name="coluna_eta" 
+                   value="{{ config.get('coluna_eta', 'ETA Origem') }}" 
+                   placeholder="ETA Origem">
+        </div>
+
+        <div class="form-group">
+            <label for="coluna_placa">Placa:</label>
+            <input type="text" id="coluna_placa" name="coluna_placa" 
+                   value="{{ config.get('coluna_placa', 'Placa') }}" 
+                   placeholder="Placa">
+        </div>
+    </div>
+
+    <h3 style="color: #333; margin-top: 30px;">🔒 Segurança</h3>
+    
+    <div class="form-group">
+        <label for="nova_senha">Nova Senha de Acesso (deixe vazio para manter):</label>
+        <input type="password" id="nova_senha" name="nova_senha" 
+               placeholder="Digite a nova senha">
+        <small style="color: #6c757d;">Senha atual: ••••••••</small>
+    </div>
+
+    <div style="margin-top: 30px; display: flex; gap: 10px;">
+        <button type="submit" name="action" value="salvar" class="btn btn-success">
+            💾 Salvar no Banco
+        </button>
+        <a href="{{ url_for('config_logout') }}" class="btn btn-outline-danger">
+            🚪 Sair
+        </a>
+    </div>
+</form>
+
+{% if config %}
+<hr style="margin: 30px 0;">
+
+<h3>📋 Configurações Atuais no Banco</h3>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #e9ecef;">
+                <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Configuração</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Valor</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chave, valor in config.items() %}
+            <tr>
+                <td style="padding: 8px; border: 1px solid #dee2e6; font-weight: 500;">
+                    {{ chave.replace('_', ' ').title() }}
+                </td>
+                <td style="padding: 8px; border: 1px solid #dee2e6; font-family: monospace; max-width: 300px; word-break: break-all;">
+                    {% if valor and valor|length > 50 %}
+                        {{ valor[:50] }}...
+                    {% elif valor %}
+                        {{ valor }}
+                    {% else %}
+                        <em style="color: #6c757d;">Não configurado</em>
+                    {% endif %}
+                </td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">
+                    {% if valor %}
+                        <span style="color: #28a745; font-weight: 500;">✅ Configurado</span>
+                    {% else %}
+                        <span style="color: #dc3545; font-weight: 500;">❌ Vazio</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #bee5eb;">
+    <h4 style="margin: 0 0 10px 0; color: #0c5460;">💡 Informações Importantes:</h4>
+    <ul style="margin: 0; padding-left: 20px;">
+        <li><strong>Spreadsheet ID:</strong> Obtenha da URL da planilha Google Sheets</li>
+        <li><strong>Sheet Name:</strong> Nome da aba (ex: "SHOPEE", "Dados", etc.)</li>
+        <li><strong>Header Row:</strong> Linha onde estão os cabeçalhos das colunas</li>
+        <li><strong>Evolution API:</strong> URL do seu servidor Evolution API</li>
+    </ul>
+</div>
+{% else %}
+<div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #ffeaa7;">
+    <strong>📝 Primeira configuração:</strong><br>
+    Preencha os campos acima e clique em "Salvar no Banco" para começar a usar o sistema.
+</div>
+{% endif %}
+{% endblock %}

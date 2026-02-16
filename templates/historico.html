@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{{ url_for('index') }}" class="btn">← Voltar para Início</a>
+</div>
+
+<h2>📋 Histórico de Confirmações Enviadas</h2>
+
+{% if historico %}
+<table>
+    <thead>
+        <tr>
+            <th>ID 3ZX</th>
+            <th>Motorista</th>
+            <th>Origem</th>
+            <th>Destino</th>
+            <th>ETA Origem</th>
+            <th>Telefone</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in historico %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+            <td>{{ item[4] }}</td>
+            <td>{{ item[5] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="alert alert-info">
+    <strong>Nenhuma confirmação enviada ainda.</strong><br>
+    Use a página inicial para carregar dados e enviar confirmações.
+</div>
+{% endif %}
+
+<div style="margin-top: 30px; text-align: center;">
+    <p style="color: #666;">
+        Total de registros: {{ historico|length if historico else 0 }}
+    </p>
+</div>
+{% endblock %}
