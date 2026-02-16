@@ -153,6 +153,44 @@ def get_qrcode():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/templates', methods=['GET'])
+def api_listar_templates():
+    try:
+        templates = db.obter_templates()
+        templates_list = [
+            {
+                'id': t[0],
+                'nome': t[1],
+                'conteudo': t[2],
+                'descricao': t[3] if t[3] else '',
+                'data_criacao': t[4],
+                'data_modificacao': t[5]
+            }
+            for t in templates
+        ]
+        return jsonify({'success': True, 'templates': templates_list})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/templates/<int:template_id>', methods=['GET'])
+def api_obter_template(template_id):
+    try:
+        templates = db.obter_templates()
+        template = next((t for t in templates if t[0] == template_id), None)
+        
+        if not template:
+            return jsonify({'success': False, 'error': 'Template não encontrado'}), 404
+        
+        return jsonify({
+            'success': True,
+            'id': template[0],
+            'nome': template[1],
+            'conteudo': template[2],
+            'descricao': template[3] if template[3] else ''
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
