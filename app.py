@@ -72,16 +72,28 @@ def fetch_instancias_evolution():
 
 def carregar_dados_automatico(data_inicio=None, data_fim=None):
     try:
+        print("\n" + "="*80)
+        print("🔍 INICIANDO carregar_dados_automatico()")
+        print("="*80)
+        
         spreadsheet_id = db.obter_configuracao('google_spreadsheet_id')
+        print(f"📋 Spreadsheet ID: {spreadsheet_id}")
+        
         sheet_name = db.obter_configuracao('google_sheet_name', 'SHOPEE')
+        print(f"📄 Sheet Name: {sheet_name}")
+        
         header_row = int(db.obter_configuracao('google_header_row', '3'))
+        print(f"📊 Header Row: {header_row}")
+        
         linha_inicio_dados = db.obter_configuracao('linha_inicio_dados', None)
         
         if linha_inicio_dados:
             try:
                 linha_inicio_dados = int(linha_inicio_dados)
+                print(f"📍 Linha Início Dados: {linha_inicio_dados}")
             except ValueError:
                 linha_inicio_dados = None
+                print("⚠️ linha_inicio_dados inválida, usando None")
 
         mapeamento_colunas = {
             'ID 3ZX': db.obter_configuracao('coluna_id', 'ID 3ZX'),
@@ -94,12 +106,16 @@ def carregar_dados_automatico(data_inicio=None, data_fim=None):
             'Placa': db.obter_configuracao('coluna_placa', 'Placa'),
             'LT': db.obter_configuracao('coluna_lt', 'N° Carga')
         }
+        print(f"🗂️ Mapeamento de colunas: {mapeamento_colunas}")
         
         if not spreadsheet_id:
             print("⚠️ GOOGLE_SPREADSHEET_ID não configurado")
             return pd.DataFrame()
         
+        print("🔌 Criando GoogleSheetsReader...")
         sheets_reader = GoogleSheetsReader(spreadsheet_id)
+        
+        print("📥 Chamando obter_dados_confirmacao()...")
         dados = sheets_reader.obter_dados_confirmacao(
             sheet_name,
             linha_cabecalho=header_row,
@@ -109,10 +125,20 @@ def carregar_dados_automatico(data_inicio=None, data_fim=None):
             data_fim=data_fim
         )
         
+        print(f"✅ Dados carregados: {len(dados)} registros")
+        print("="*80 + "\n")
         return dados
         
     except Exception as e:
-        print(f"❌ Erro ao carregar dados: {e}")
+        import traceback
+        print(f"\n{'='*80}")
+        print(f"❌ ERRO EM carregar_dados_automatico()")
+        print(f"{'='*80}")
+        print(f"Tipo: {type(e).__name__}")
+        print(f"Mensagem: {e}")
+        print(f"\nTraceback completo:")
+        print(traceback.format_exc())
+        print(f"{'='*80}\n")
         return pd.DataFrame()
 
 @app.route('/health')

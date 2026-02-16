@@ -82,7 +82,10 @@ class GoogleSheetsReader:
     ) -> pd.DataFrame:
 
         try:
+            print(f"\n🔍 [ler_planilha] Aba: {aba_nome}, Range: {col_range}")
+            
             # 1) Metadados
+            print("📥 Buscando metadados da planilha...")
             metadata = self.service.spreadsheets().get(
                 spreadsheetId=self.spreadsheet_id
             ).execute()
@@ -92,25 +95,33 @@ class GoogleSheetsReader:
             )
 
             total_rows = sheet_info["properties"]["gridProperties"]["rowCount"]
+            print(f"📊 Total de linhas na planilha: {total_rows}")
 
             # 2) Range real início → se linha_inicio_dados existir, usamos ele
             start_row = linha_inicio_dados if linha_inicio_dados else linha_cabecalho
             
             start_col, end_col = col_range.split(":")
             range_real = f"{aba_nome}!{start_col}{start_row}:{end_col}{total_rows}"
+            print(f"📍 Range real: {range_real}")
 
             # 3) Leitura turbo
+            print("📥 Executando batchGet...")
             result = self.service.spreadsheets().values().batchGet(
                 spreadsheetId=self.spreadsheet_id,
                 ranges=[range_real]
             ).execute()
 
             values = result["valueRanges"][0].get("values", [])
+            print(f"✅ Recebeu {len(values)} linhas do Google Sheets")
+            
             if not values:
+                print("⚠️ Nenhum dado retornado")
                 return pd.DataFrame()
             
             # Limpa caracteres de controle de todas as células
+            print("🧹 Limpando caracteres de controle...")
             values = [[self._limpar_string(cell) for cell in row] for row in values]
+            print("✅ Limpeza concluída")
 
             # 4) Cabeçalhos (sempre da linha_cabecalho REAL)
             header_range = f"{aba_nome}!{start_col}{linha_cabecalho}:{end_col}{linha_cabecalho}"
@@ -129,13 +140,24 @@ class GoogleSheetsReader:
             max_cols = len(headers)
             data = [row + [""] * (max_cols - len(row)) for row in data]
 
+            print(f"📊 Criando DataFrame com {len(data)} linhas e {len(headers)} colunas...")
             df = pd.DataFrame(data, columns=headers)
+            print("🧹 Removendo linhas vazias...")
             df = df.dropna(how="all")
+            print(f"✅ DataFrame final: {len(df)} linhas")
 
             return df
 
         except Exception as e:
-            print(f"❌ Erro na leitura turbo: {e}")
+            import traceback
+            print(f"\n{'='*80}")
+            print(f"❌ ERRO EM ler_planilha()")
+            print(f"{'='*80}")
+            print(f"Tipo: {type(e).__name__}")
+            print(f"Mensagem: {e}")
+            print(f"\nTraceback completo:")
+            print(traceback.format_exc())
+            print(f"{'='*80}\n")
             return pd.DataFrame()
 
 
