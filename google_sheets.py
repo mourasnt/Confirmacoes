@@ -182,6 +182,8 @@ class GoogleSheetsReader:
 
         # Filtro por datas
         if "ETA Origem" in df.columns:
+            print(f"🔍 Filtro de data recebido - Início: '{data_inicio}' | Fim: '{data_fim}'")
+            
             df["ETA_datetime"] = pd.to_datetime(
                 df["ETA Origem"], 
                 format="%d/%m/%Y %H:%M",
@@ -189,11 +191,22 @@ class GoogleSheetsReader:
             )
 
             if data_inicio:
-                df = df[df["ETA_datetime"] >= pd.to_datetime(data_inicio, format="%d/%m/%Y %H:%M")]
+                try:
+                    data_inicio_parsed = pd.to_datetime(data_inicio, format="%d/%m/%Y %H:%M")
+                    print(f"✅ Data início parseada: {data_inicio_parsed}")
+                    df = df[df["ETA_datetime"] >= data_inicio_parsed]
+                except Exception as e:
+                    print(f"❌ Erro ao parsear data_inicio '{data_inicio}': {e}")
 
             if data_fim:
-                df = df[df["ETA_datetime"] <= pd.to_datetime(data_fim, format="%d/%m/%Y %H:%M")]
+                try:
+                    data_fim_parsed = pd.to_datetime(data_fim, format="%d/%m/%Y %H:%M")
+                    print(f"✅ Data fim parseada: {data_fim_parsed}")
+                    df = df[df["ETA_datetime"] <= data_fim_parsed]
+                except Exception as e:
+                    print(f"❌ Erro ao parsear data_fim '{data_fim}': {e}")
 
+            print(f"📊 Registros após filtro de data: {len(df)}")
             df = df.sort_values("ETA_datetime").drop(columns=["ETA_datetime"], errors="ignore")
 
         return df

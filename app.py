@@ -225,6 +225,20 @@ def index():
     
     data_inicio = request.args.get('data_inicio', None)
     data_fim = request.args.get('data_fim', None)
+    
+    # Normaliza formato de data se for fornecido
+    if data_inicio:
+        data_inicio = data_inicio.strip()
+        if data_inicio == '':
+            data_inicio = None
+    
+    if data_fim:
+        data_fim = data_fim.strip()
+        if data_fim == '':
+            data_fim = None
+    
+    print(f"🔍 Filtro de data - Início: '{data_inicio}' | Fim: '{data_fim}'")
+    
     dados = carregar_dados_automatico(data_inicio=data_inicio, data_fim=data_fim)
     
     historico_set = set()
@@ -309,6 +323,34 @@ def novo_template():
             return redirect(url_for('listar_templates'))
     return render_template('template_form.html', template=None)
 
+@app.route('/templates/<int:template_id>/editar', methods=['GET', 'POST'])
+def editar_template(template_id):
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        conteudo = request.form.get('conteudo')
+        descricao = request.form.get('descricao', '')
+        if db.atualizar_template(template_id, nome, conteudo, descricao):
+            flash('Template atualizado com sucesso!', 'success')
+            return redirect(url_for('listar_templates'))
+        else:
+            flash('Erro ao atualizar template', 'danger')
+    
+    templates = db.obter_templates()
+    template = next((t for t in templates if t[0] == template_id), None)
+    if not template:
+        flash('Template não encontrado', 'danger')
+        return redirect(url_for('listar_templates'))
+    
+    return render_template('template_form.html', template=template)
+
+@app.route('/templates/<int:template_id>/excluir', methods=['POST'])
+def excluir_template(template_id):
+    if db.excluir_template(template_id):
+        flash('Template excluído com sucesso!', 'success')
+    else:
+        flash('Erro ao excluir template', 'danger')
+    return redirect(url_for('listar_templates'))
+
 @app.route('/api/enviar-lote', methods=['POST'])
 def api_enviar_lote():
     global envio_em_andamento
@@ -328,7 +370,16 @@ def api_enviar_lote():
         
         sender = MensagemSender()
         resultados = sender.enviar_confirmacoes(df, template, instancia)
-        return jsonify({'success': True, 'resumo': resultados})
+        total = len(resultados['enviados']) + len(resultados['pulados']) + len(resultados['erros'])
+        return jsonify({
+            'success': True, 
+            'resumo': {
+                'total': total,
+                'enviados': len(resultados['enviados']),
+                'pulados': len(resultados['pulados']),
+                'erros': len(resultados['erros'])
+            }
+        })
     finally:
         with envio_lock: envio_em_andamento = False
 
