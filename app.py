@@ -35,8 +35,18 @@ envio_lock = threading.Lock()
 
 def fetch_instancias_evolution():
     try:
-        evolution_url = db.obter_configuracao('evolution_api_url', 'http://evolution_api:8080')
+        evolution_url = db.obter_configuracao('evolution_api_url', '')
+        print(f"🔍 DEBUG: evolution_url do banco = '{evolution_url}'")
+        
+        # Garante que usa o padrão se estiver vazio
+        if not evolution_url or not evolution_url.strip():
+            evolution_url = 'http://5.78.121.199:8080'
+            print(f"🔍 DEBUG: Usando valor padrão = '{evolution_url}'")
+        else:
+            print(f"🔍 DEBUG: Usando valor do banco = '{evolution_url}'")
+            
         url = f"{evolution_url}/instance/fetchInstances"
+        print(f"🔍 DEBUG: URL final = '{url}'")
         response = requests.get(url, timeout=10, headers = {"Content-Type": "application/json", "apikey": db.obter_configuracao('evolution_api_key', 'Senh@Segura123')})
         response.raise_for_status()
         data = response.json()
@@ -123,6 +133,9 @@ def criar_instancia():
             return jsonify({'success': False, 'error': 'Nome da instância não fornecido'}), 400
         
         evolution_url = db.obter_configuracao('evolution_api_url', 'http://evolution_api:8080')
+        # Garante que usa o padrão se estiver vazio
+        if not evolution_url or not evolution_url.strip():
+            evolution_url = 'http://evolution_api:8080'
         url = f"{evolution_url}/instance/create"
         payload = {
             "instanceName": instancia_name,
@@ -149,6 +162,9 @@ def get_qrcode():
         return jsonify({'success': False, 'error': 'Instância não fornecida'}), 400
     try:
         evolution_url = db.obter_configuracao('evolution_api_url', 'http://evolution_api:8080')
+        # Garante que usa o padrão se estiver vazio
+        if not evolution_url or not evolution_url.strip():
+            evolution_url = 'http://evolution_api:8080'
         url = f"{evolution_url}/instance/connect/{instancia}"
         response = requests.get(url, timeout=60, headers = {"Content-Type": "application/json", "apikey": db.obter_configuracao('evolution_api_key', 'Senh@Segura123')})
         response.raise_for_status()
