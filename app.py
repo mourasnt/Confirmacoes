@@ -331,5 +331,11 @@ def config():
     config_atual = {k: db.obter_configuracao(k, '') for k in ['google_spreadsheet_id', 'google_sheet_name', 'google_header_row', 'evolution_api_url', 'evolution_api_key']}
     return render_template('config.html', config=config_atual)
 
+@app.route('/config/logout', methods=['GET'])
+def config_logout():
+    session.clear()
+    flash('Desconectado com sucesso!', 'info')
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
