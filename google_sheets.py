@@ -5,6 +5,7 @@ from typing import List, Dict, Optional
 import os
 import httplib2
 from google_auth_httplib2 import AuthorizedHttp
+import re
 
 
 class GoogleSheetsReader:
@@ -18,6 +19,13 @@ class GoogleSheetsReader:
         self.scopes = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
         self.service = self._authenticate()
 
+    def _limpar_string(self, texto):
+        """Remove caracteres de controle inválidos de strings."""
+        if not isinstance(texto, str):
+            return texto
+        # Remove caracteres de controle exceto tabs e newlines comuns
+        return re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]', '', texto)
+    
     def _authenticate(self):
         """Autentica com Google Sheets API usando Service Account."""
         if not os.path.exists(self.credentials_file):
@@ -100,6 +108,9 @@ class GoogleSheetsReader:
             values = result["valueRanges"][0].get("values", [])
             if not values:
                 return pd.DataFrame()
+            
+            # Limpa caracteres de controle de todas as células
+            values = [[self._limpar_string(cell) for cell in row] for row in values]
 
             # 4) Cabeçalhos (sempre da linha_cabecalho REAL)
             header_range = f"{aba_nome}!{start_col}{linha_cabecalho}:{end_col}{linha_cabecalho}"

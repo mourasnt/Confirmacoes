@@ -223,20 +223,10 @@ def index():
         elif action == 'enviar':
             return enviar_confirmacoes_sync()
     
-    data_inicio = request.args.get('data_inicio', None)
-    data_fim = request.args.get('data_fim', None)
+    data_inicio = request.args.get('data_inicio', '').strip() or None
+    data_fim = request.args.get('data_fim', '').strip() or None
     
-    # Normaliza formato de data se for fornecido
-    if data_inicio:
-        data_inicio = data_inicio.strip()
-        if data_inicio == '':
-            data_inicio = None
-    
-    if data_fim:
-        data_fim = data_fim.strip()
-        if data_fim == '':
-            data_fim = None
-    
+    print(f"🔍 DEBUG: request.args = {dict(request.args)}")
     print(f"🔍 Filtro de data - Início: '{data_inicio}' | Fim: '{data_fim}'")
     
     dados = carregar_dados_automatico(data_inicio=data_inicio, data_fim=data_fim)
