@@ -83,10 +83,7 @@ function syncEnvConfig() {
   };
   for (const [chave, valor] of Object.entries(envMappings)) {
     if (!valor) continue;
-    const atual = db.prepare("SELECT valor FROM configuracoes WHERE chave = ?").get(chave);
-    if (!atual || !atual.valor) {
-      db.prepare("INSERT INTO configuracoes (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor").run(chave, valor);
-    }
+    db.prepare("INSERT INTO configuracoes (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor").run(chave, valor);
   }
 }
 
