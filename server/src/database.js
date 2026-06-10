@@ -75,6 +75,7 @@ export function initDB() {
 function syncEnvConfig() {
   const envMappings = {
     evolution_api_url: process.env.EVOLUTION_API_URL,
+    evolution_send_api_url: process.env.EVOLUTION_SEND_API_URL,
     evolution_api_key: process.env.EVOLUTION_API_KEY,
     google_spreadsheet_id: process.env.GOOGLE_SPREADSHEET_ID,
     google_sheet_name: process.env.GOOGLE_SHEET_NAME,
@@ -107,6 +108,7 @@ function seedDefaults() {
     { chave: 'google_header_row', valor: process.env.GOOGLE_HEADER_ROW || '1' },
     { chave: 'linha_inicio_dados', valor: process.env.GOOGLE_DATA_START_ROW || '2' },
     { chave: 'evolution_api_url', valor: process.env.EVOLUTION_API_URL || '' },
+    { chave: 'evolution_send_api_url', valor: process.env.EVOLUTION_SEND_API_URL || '' },
     { chave: 'evolution_api_key', valor: process.env.EVOLUTION_API_KEY || '' },
     { chave: 'coluna_id', valor: process.env.COLUNA_ID || 'A' },
     { chave: 'coluna_lt', valor: process.env.COLUNA_LT || 'B' },
