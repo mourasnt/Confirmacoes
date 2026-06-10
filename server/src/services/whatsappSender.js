@@ -82,7 +82,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           `${apiUrl}/message/sendText/${instancia}`,
           {
             number: telefone,
-            textMessage: { text: mensagem },
+            text: mensagem,
             delay: 1200,
             linkPreview: false,
           },
