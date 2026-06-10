@@ -107,7 +107,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           responseBody: err.response?.data || err.message,
         };
         console.error('ERRO ENVIO:', JSON.stringify(requestInfo, null, 2));
-        resultados.erros.push({ id: row.id || 'unknown', erro: `[${err.response?.status || ''}] ${JSON.stringify(err.response?.data) || err.message}`, requestBody: reqBody });
+        resultados.erros.push({ id: row.id || 'unknown', erro: `[${err.response?.status || ''}] ${JSON.stringify(err.response?.data) || err.message}`, requestBody: reqBody, requestUrl: err.config?.url || '' });
       }
     }
   } finally {
