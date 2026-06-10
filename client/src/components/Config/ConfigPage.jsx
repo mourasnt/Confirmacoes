@@ -47,6 +47,7 @@ export default function ConfigPage() {
     { key: 'google_header_row', label: 'Linha do Cabeçalho', placeholder: '1' },
     { key: 'linha_inicio_dados', label: 'Linha Início Dados', placeholder: '2' },
     { key: 'evolution_api_url', label: 'Evolution API URL', placeholder: 'http://evolution_api:8080' },
+    { key: 'evolution_send_api_url', label: 'Evolution Send API URL', placeholder: 'http://5.78.121.199:8080' },
     { key: 'evolution_api_key', label: 'Evolution API Key', placeholder: '********' },
   ];
 
