@@ -11,7 +11,7 @@ import { initDB } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-dotenv.config({ path: resolve(__dirname, '..', '..', '.env') });
+dotenv.config({ path: resolve(__dirname, '..', '.env') });
 import instancesRouter from './routes/instances.js';
 import templatesRouter from './routes/templates.js';
 import messagesRouter from './routes/messages.js';

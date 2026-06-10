@@ -69,6 +69,25 @@ export function initDB() {
   `);
 
   seedDefaults();
+  syncEnvConfig();
+}
+
+function syncEnvConfig() {
+  const envMappings = {
+    evolution_api_url: process.env.EVOLUTION_API_URL,
+    evolution_api_key: process.env.EVOLUTION_API_KEY,
+    google_spreadsheet_id: process.env.GOOGLE_SPREADSHEET_ID,
+    google_sheet_name: process.env.GOOGLE_SHEET_NAME,
+    google_header_row: process.env.GOOGLE_HEADER_ROW,
+    linha_inicio_dados: process.env.GOOGLE_DATA_START_ROW,
+  };
+  for (const [chave, valor] of Object.entries(envMappings)) {
+    if (!valor) continue;
+    const atual = db.prepare("SELECT valor FROM configuracoes WHERE chave = ?").get(chave);
+    if (!atual || !atual.valor) {
+      db.prepare("INSERT INTO configuracoes (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor").run(chave, valor);
+    }
+  }
 }
 
 function seedDefaults() {

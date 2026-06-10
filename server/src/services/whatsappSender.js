@@ -79,7 +79,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
         }
 
         await axios.post(
-          `${apiUrl}/message/sendText/${instancia}`,
+          `${apiUrl}/message/sendText/${encodeURIComponent(instancia)}`,
           {
             number: telefone,
             textMessage: { text: mensagem },

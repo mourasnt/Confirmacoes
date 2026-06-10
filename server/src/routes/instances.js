@@ -50,7 +50,7 @@ router.post('/qrcode', async (req, res, next) => {
     const { instancia } = req.body;
     const { url, key } = getEvolutionConfig();
 
-    const { data } = await axios.get(`${url}/instance/connect/${instancia}`, {
+    const { data } = await axios.get(`${url}/instance/connect/${encodeURIComponent(instancia)}`, {
       headers: { apikey: key },
     });
     res.json(data);
