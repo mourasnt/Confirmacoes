@@ -47,6 +47,7 @@ export function initDB() {
       origem TEXT NOT NULL,
       destino TEXT NOT NULL,
       eta_origem TEXT NOT NULL,
+      eta_destino TEXT NOT NULL,
       telefone TEXT NOT NULL,
       data_envio DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -67,6 +68,11 @@ export function initDB() {
       data_modificacao DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  const tableInfo = db.prepare("PRAGMA table_info('confirmacoes')").all();
+  if (!tableInfo.some(col => col.name === 'eta_destino')) {
+    db.exec("ALTER TABLE confirmacoes ADD COLUMN eta_destino TEXT NOT NULL DEFAULT ''");
+  }
 
   seedDefaults();
   syncEnvConfig();
@@ -115,6 +121,7 @@ function seedDefaults() {
     { chave: 'coluna_eta', valor: process.env.COLUNA_ETA || 'H' },
     { chave: 'coluna_placa', valor: process.env.COLUNA_PLACA || 'I' },
     { chave: 'coluna_placa2', valor: process.env.COLUNA_PLACA2 || 'J' },
+    { chave: 'coluna_eta_destino', valor: process.env.COLUNA_ETA_DESTINO || 'AB' },
     { chave: 'templates_padrao_inseridos', valor: '1' },
   ];
 
@@ -133,8 +140,8 @@ function seedDefaults() {
   seedTransaction();
 }
 
-export function gerarHash(id3zx, motorista, origem, destino, etaOrigem) {
-  return crypto.createHash('sha256').update(`${id3zx}|${motorista}|${origem}|${destino}|${etaOrigem}`).digest('hex');
+export function gerarHash(id3zx, motorista, origem, destino, etaOrigem, etaDestino) {
+  return crypto.createHash('sha256').update(`${id3zx}|${motorista}|${origem}|${destino}|${etaOrigem}|${etaDestino}`).digest('hex');
 }
 
 export function jaFoiEnviado(hash) {
@@ -142,10 +149,10 @@ export function jaFoiEnviado(hash) {
   return !!row;
 }
 
-export function registrarEnvio(hash, id3zx, motorista, origem, destino, etaOrigem, telefone) {
+export function registrarEnvio(hash, id3zx, motorista, origem, destino, etaOrigem, etaDestino, telefone) {
   db.prepare(
-    "INSERT INTO confirmacoes (hash_confirmacao, id_3zx, motorista, origem, destino, eta_origem, telefone) VALUES (?, ?, ?, ?, ?, ?, ?)"
-  ).run(hash, id3zx, motorista, origem, destino, etaOrigem, telefone);
+    "INSERT INTO confirmacoes (hash_confirmacao, id_3zx, motorista, origem, destino, eta_origem, eta_destino, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+  ).run(hash, id3zx, motorista, origem, destino, etaOrigem, etaDestino, telefone);
 }
 
 export function obterHistorico() {

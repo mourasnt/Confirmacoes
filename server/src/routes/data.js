@@ -40,6 +40,7 @@ router.get('/', async (req, res, next) => {
       origem: config.coluna_origem || process.env.COLUNA_ORIGEM || 'F',
       destino: config.coluna_destino || process.env.COLUNA_DESTINO || 'G',
       eta: config.coluna_eta || process.env.COLUNA_ETA || 'H',
+      eta_destino: config.coluna_eta_destino || process.env.COLUNA_ETA_DESTINO || 'AB',
       placa: config.coluna_placa || process.env.COLUNA_PLACA || 'I',
       placa2: config.coluna_placa2 || process.env.COLUNA_PLACA2 || 'J',
     };

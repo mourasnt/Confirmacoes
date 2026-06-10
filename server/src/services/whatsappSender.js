@@ -26,6 +26,7 @@ function processarTemplate(template, dados) {
     placa2: dados.placa2 || dados.placa || '',
     id_3zx: dados.id || '',
     telefone: dados.telefone || '',
+    eta_destino: dados.eta_destino || '',
     data: dados.eta || '',
     n_carga: dados.lt || '',
     operacao: dados.operacao || '',
@@ -62,7 +63,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
 
     for (const row of registros) {
       try {
-        const hash = gerarHash(row.id || '', row.motorista || '', row.origem || '', row.destino || '', row.eta || '');
+        const hash = gerarHash(row.id || '', row.motorista || '', row.origem || '', row.destino || '', row.eta || '', row.eta_destino || '');
         const jaEnviado = jaFoiEnviado(hash);
 
         if (jaEnviado) {
@@ -89,7 +90,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           { headers: { apikey: apiKey } }
         );
 
-        registrarEnvio(hash, row.id || '', row.motorista || '', row.origem || '', row.destino || '', row.eta || '', telefone);
+        registrarEnvio(hash, row.id || '', row.motorista || '', row.origem || '', row.destino || '', row.eta || '', row.eta_destino || '', telefone);
         resultados.enviados++;
 
         if (registros.length > 1) {
