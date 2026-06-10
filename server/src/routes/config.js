@@ -54,7 +54,6 @@ const configSchema = z.object({
   google_header_row: z.string().optional(),
   linha_inicio_dados: z.string().optional(),
   evolution_api_url: z.string().optional(),
-  evolution_send_api_url: z.string().optional(),
   evolution_api_key: z.string().optional(),
   coluna_id: z.string().optional(),
   coluna_cliente: z.string().optional(),

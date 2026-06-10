@@ -57,7 +57,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
   const resultados = { enviados: 0, pulados: 0, erros: [] };
 
   try {
-    const apiUrl = (obterConfiguracao('evolution_send_api_url', process.env.EVOLUTION_SEND_API_URL || 'http://5.78.121.199:8080')).replace(/\/$/, '');
+    const apiUrl = (obterConfiguracao('evolution_api_url', process.env.EVOLUTION_API_URL || 'http://evolution_api:8080')).replace(/\/$/, '');
     const apiKey = obterConfiguracao('evolution_api_key', process.env.EVOLUTION_API_KEY || '');
 
     for (const row of registros) {
@@ -82,7 +82,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           `${apiUrl}/message/sendText/${encodeURIComponent(instancia)}`,
           {
             number: telefone,
-            textMessage: { text: mensagem },
+            text: mensagem,
             delay: 1200,
             linkPreview: false,
           },
