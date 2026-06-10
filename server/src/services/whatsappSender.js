@@ -82,7 +82,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           `${apiUrl}/message/sendText/${instancia}`,
           {
             number: telefone,
-            text: mensagem,
+            textMessage: { text: mensagem },
             delay: 1200,
             linkPreview: false,
           },
@@ -96,11 +96,18 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           await sleep(randomDelay(5000, 12000));
         }
       } catch (err) {
-        const detalhe = err.response?.data?.response?.message
-          || err.response?.data?.error
-          || err.message;
-        const status = err.response?.status || '';
-        resultados.erros.push({ id: row.id || 'unknown', erro: `HTTP ${status}: ${JSON.stringify(detalhe)}` });
+        let reqBody = err.config?.data || {};
+        if (typeof reqBody === 'string') try { reqBody = JSON.parse(reqBody); } catch {}
+        const requestInfo = {
+          url: err.config?.url || '',
+          method: err.config?.method || '',
+          headers: err.config?.headers || {},
+          requestBody: reqBody,
+          responseStatus: err.response?.status || '',
+          responseBody: err.response?.data || err.message,
+        };
+        console.error('ERRO ENVIO:', JSON.stringify(requestInfo, null, 2));
+        resultados.erros.push({ id: row.id || 'unknown', erro: `[${err.response?.status || ''}] ${JSON.stringify(err.response?.data) || err.message}` });
       }
     }
   } finally {
