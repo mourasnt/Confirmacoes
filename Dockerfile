@@ -1,38 +1,21 @@
-# Use Python 3.11 slim image as base
-FROM python:3.11-slim
+FROM node:24-slim AS builder
+WORKDIR /app/client
+COPY client/package*.json ./
+RUN npm ci
+COPY client/ .
+RUN npm run build
 
-# Set working directory
+FROM node:24-slim AS runner
 WORKDIR /app
+COPY server/package*.json ./
+RUN npm ci --omit=dev
+COPY server/ .
+COPY --from=builder /app/client/dist ./public
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements file
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application files
-COPY app.py .
-COPY database.py .
-COPY google_sheets.py .
-COPY mensagem_sender.py .
-COPY templates/ templates/
-COPY static/ static/
-COPY credentials.json .
-
-# Create data directory for database
-RUN mkdir -p data
-
-# Expose port
+ENV NODE_ENV=production
 EXPOSE 5000
 
-# Set environment variables
-ENV FLASK_APP=app.py
-ENV PYTHONUNBUFFERED=1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1
 
-# Run Flask application
-CMD ["python", "-u", "app.py"]
+CMD ["node", "src/index.js"]

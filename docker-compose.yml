@@ -1,44 +1,19 @@
-version: '3.8'
-
 services:
-  whatsapp-confirmacoes:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: whatsapp-confirmacoes
-    restart: unless-stopped
+  app:
+    build: .
     ports:
       - "5000:5000"
-    environment:
-      # Evolution API Configuration
-      EVOLUTION_API_URL: "http://evolution_api:8080"
-      EVOLUTION_API_KEY: "Senh@Segura123"
-      
-      # Flask Configuration
-      FLASK_ENV: "production"
-      FLASK_APP: "app.py"
-      PYTHONUNBUFFERED: "1"
-    
     volumes:
-      # Mount data directory for persistent database
       - ./data:/app/data
-      # Mount templates for easy configuration
-      - ./templates:/app/templates
-      # Mount static files
-      - ./static:/app/static
-      # Mount credentials for Google Sheets
       - ./credentials.json:/app/credentials.json:ro
-    
+    env_file: .env
+    environment:
+      - NODE_ENV=production
     networks:
       - evolution-net
-    
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    restart: unless-stopped
 
 networks:
   evolution-net:
-    driver: bridge
+    name: evolution-net
+    external: true

@@ -1,0 +1,22 @@
+{
+  "name": "confirmacoes-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "12.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-session": "^1.18.1",
+    "googleapis": "^173.0.0",
+    "helmet": "^8.2.0",
+    "zod": "^4.4.3"
+  }
+}
