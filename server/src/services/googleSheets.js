@@ -148,7 +148,12 @@ export class GoogleSheetsReader {
       return status.includes('pré agendado') || status.includes('pre agendado') || status === '';
     });
 
-    const dateFiltered = filtered.filter((row) => {
+    const comTelefone = filtered.filter((row) => {
+      const tel = (row.telefone || '').trim();
+      return tel !== '' && tel !== '-';
+    });
+
+    const dateFiltered = comTelefone.filter((row) => {
       if (!dataInicio && !dataFim) return true;
       const eta = parseDateDMY(row.eta);
       if (!eta) return true;

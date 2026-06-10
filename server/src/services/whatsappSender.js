@@ -96,7 +96,11 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           await sleep(randomDelay(5000, 12000));
         }
       } catch (err) {
-        resultados.erros.push({ id: row.id || 'unknown', erro: err.message });
+        const detalhe = err.response?.data?.response?.message
+          || err.response?.data?.error
+          || err.message;
+        const status = err.response?.status || '';
+        resultados.erros.push({ id: row.id || 'unknown', erro: `HTTP ${status}: ${JSON.stringify(detalhe)}` });
       }
     }
   } finally {
