@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { fetchData, fetchInstances, fetchTemplates, sendBatch } from '../../services/api.js';
 import { useToast } from '../../context/ToastContext.jsx';
 import StatsCards from './StatsCards.jsx';
@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const [templates, setTemplates] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedInstance, setSelectedInstance] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,10 +38,24 @@ export default function DashboardPage() {
     }
   }, [startDate, endDate, toast]);
 
+  const statusOptions = useMemo(() => {
+    const set = new Set();
+    for (const d of data) {
+      const s = (d.status || '').trim();
+      if (s) set.add(s);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [data]);
+
+  const filteredData = useMemo(() => {
+    if (!selectedStatus) return data;
+    return data.filter((d) => (d.status || '') === selectedStatus);
+  }, [data, selectedStatus]);
+
   const stats = {
-    total: data.length,
+    total: filteredData.length,
     enviados: 0,
-    pendentes: data.length,
+    pendentes: filteredData.length,
     selecionados: selected.length,
   };
 
@@ -50,11 +65,18 @@ export default function DashboardPage() {
     );
   };
 
+  const handleStatusChange = (e) => {
+    setSelectedStatus(e.target.value);
+    setSelected([]);
+  };
+
   const handleSelectAll = () => {
-    if (selected.length === data.length) {
-      setSelected([]);
+    const filteredUids = filteredData.map((d) => d.uid);
+    const allSelected = filteredUids.length > 0 && filteredUids.every((u) => selected.includes(u));
+    if (allSelected) {
+      setSelected((prev) => prev.filter((u) => !filteredUids.includes(u)));
     } else {
-      setSelected(data.map((d) => d.uid));
+      setSelected((prev) => Array.from(new Set([...prev, ...filteredUids])));
     }
   };
 
@@ -93,6 +115,7 @@ export default function DashboardPage() {
   const handleClearFilter = () => {
     setStartDate('');
     setEndDate('');
+    setSelectedStatus('');
     loadData();
   };
 
@@ -112,33 +135,47 @@ export default function DashboardPage() {
       <StatsCards stats={stats} />
 
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="startDate">Data Início</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="startDate">Data/Hora Início</label>
             <input
               id="startDate"
-              type="date"
+              type="datetime-local"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="endDate">Data Fim</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="endDate">Data/Hora Fim</label>
             <input
               id="endDate"
-              type="date"
+              type="datetime-local"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             />
           </div>
           <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="status">Status</label>
+            <select
+              id="status"
+              value={selectedStatus}
+              onChange={handleStatusChange}
+              className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+            >
+              <option value="">Todos</option>
+              {statusOptions.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
             <label className="block text-xs font-medium text-slate-500 mb-1">Instância</label>
             <select
               value={selectedInstance}
               onChange={(e) => setSelectedInstance(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+              className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             >
               <option value="">Selecione...</option>
               {instances.map((inst) => (
@@ -153,7 +190,7 @@ export default function DashboardPage() {
             <select
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+              className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             >
               <option value="">Selecione...</option>
               {templates.map((tpl) => (
@@ -187,7 +224,7 @@ export default function DashboardPage() {
           >
             {loading
               ? 'Carregando registros...'
-              : `${data.length} registro${data.length !== 1 ? 's' : ''} carregado${data.length !== 1 ? 's' : ''}`}
+              : `${filteredData.length} registro${filteredData.length !== 1 ? 's' : ''} exibido${filteredData.length !== 1 ? 's' : ''}${selectedStatus ? ` · status: ${selectedStatus}` : ''}`}
           </p>
         </div>
 
@@ -208,7 +245,7 @@ export default function DashboardPage() {
       </div>
 
       <DataTable
-        data={data}
+        data={filteredData}
         selected={selected}
         onToggle={handleToggle}
         onSelectAll={handleSelectAll}

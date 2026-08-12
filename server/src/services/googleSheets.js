@@ -37,6 +37,10 @@ function parseDateTime(str) {
   return Number.isNaN(t) ? null : new Date(t);
 }
 
+function hasTimeComponent(str) {
+  return str ? /:/.test(String(str)) : false;
+}
+
 export class GoogleSheetsReader {
   constructor(spreadsheetId, credentialsFile) {
     this.spreadsheetId = spreadsheetId;
@@ -133,21 +137,20 @@ export class GoogleSheetsReader {
       if (headers[idx]) headerToKey[headers[idx]] = key;
     }
 
-    const mapped = data.map((row) => {
+    const statusIdx = headers.findIndex((h) => h && /status|situa[çc][ãa]o/i.test(h));
+    const statusHeader = statusIdx >= 0 ? headers[statusIdx] : null;
+
+    const mapped = data.map((row, i) => {
       const obj = {};
       for (const [header, value] of Object.entries(row)) {
         const key = headerToKey[header];
         if (key) obj[key] = value;
       }
+      obj.status = statusHeader ? (data[i][statusHeader] || '') : '';
       return obj;
     });
 
-    const filtered = mapped.filter((row) => {
-      const status = (row.status || '').toLowerCase();
-      return status.includes('pré agendado') || status.includes('pre agendado') || status === '';
-    });
-
-    const comTelefone = filtered.filter((row) => {
+    const comTelefone = mapped.filter((row) => {
       const tel = (row.telefone || '').trim();
       return tel !== '' && tel !== '-';
     });
@@ -163,7 +166,7 @@ export class GoogleSheetsReader {
       if (dataFim) {
         const end = parseDateTime(dataFim);
         if (end) {
-          end.setHours(23, 59, 59, 999);
+          if (!hasTimeComponent(dataFim)) end.setHours(23, 59, 59, 999);
           if (eta > end) return false;
         }
       }
