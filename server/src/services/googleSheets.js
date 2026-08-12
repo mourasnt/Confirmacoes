@@ -11,31 +11,30 @@ function limparString(texto) {
   return texto.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, '').trim();
 }
 
-function formatDateInput(dateStr) {
-  if (!dateStr) return null;
-  const [d, m, y] = dateStr.split('/');
-  if (!d || !m || !y) return null;
-  return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-}
-
-function parseDateDMY(str) {
+function parseDateTime(str) {
   if (!str) return null;
-  const clean = str.trim();
-  const patterns = [
-    /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/,
-    /^(\d{2})\/(\d{2})\/(\d{4})$/,
-    /^(\d{4})-(\d{2})-(\d{2})/,
-  ];
-  for (const p of patterns) {
-    const m = clean.match(p);
-    if (m) {
-      if (p === patterns[2]) {
-        return new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
-      }
-      return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4] || '00:00'}:${m[5] || '00'}`);
-    }
+  const clean = String(str).trim();
+  if (!clean) return null;
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  // ISO: YYYY-MM-DD ou YYYY-MM-DDTHH:MM[:SS] (também aceita espaço)
+  let m = clean.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/);
+  if (m) {
+    const [, y, mo, d, h = 0, mi = 0, s = 0] = m;
+    return new Date(+y, +mo - 1, +d, +h, +mi, +s);
   }
-  return null;
+
+  // DMY: DD/MM/YYYY [HH:MM[:SS]] — hora/minuto com 1 ou 2 dígitos
+  m = clean.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[\sT](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/);
+  if (m) {
+    const [, d, mo, y, h = 0, mi = 0, s = 0] = m;
+    return new Date(+y, +mo - 1, +d, +h, +mi, +s);
+  }
+
+  // fallback: parser nativo do navegador/Node
+  const t = Date.parse(clean);
+  return Number.isNaN(t) ? null : new Date(t);
 }
 
 export class GoogleSheetsReader {
@@ -155,22 +154,25 @@ export class GoogleSheetsReader {
 
     const dateFiltered = comTelefone.filter((row) => {
       if (!dataInicio && !dataFim) return true;
-      const eta = parseDateDMY(row.eta);
+      const eta = parseDateTime(row.eta);
       if (!eta) return true;
       if (dataInicio) {
-        const start = parseDateDMY(dataInicio);
+        const start = parseDateTime(dataInicio);
         if (start && eta < start) return false;
       }
       if (dataFim) {
-        const end = parseDateDMY(dataFim);
-        if (end && eta > end) return false;
+        const end = parseDateTime(dataFim);
+        if (end) {
+          end.setHours(23, 59, 59, 999);
+          if (eta > end) return false;
+        }
       }
       return true;
     });
 
     dateFiltered.sort((a, b) => {
-      const etaA = parseDateDMY(a.eta);
-      const etaB = parseDateDMY(b.eta);
+      const etaA = parseDateTime(a.eta);
+      const etaB = parseDateTime(b.eta);
       if (!etaA && !etaB) return 0;
       if (!etaA) return 1;
       if (!etaB) return -1;

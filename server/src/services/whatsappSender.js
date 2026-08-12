@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { obterConfiguracao, jaFoiEnviado, gerarHash, registrarEnvio } from '../database.js';
+import { obterConfiguracao } from '../database.js';
 
 function limparTelefone(telefone) {
   let num = telefone.replace(/\D/g, '');
@@ -50,11 +50,7 @@ function randomDelay(min, max) {
 let enviando = false;
 
 export async function enviarConfirmacoes(registros, templateConteudo, instancia) {
-  if (enviando) {
-    throw new Error('Já existe um envio em andamento');
-  }
 
-  enviando = true;
   const resultados = { enviados: 0, pulados: 0, erros: [] };
 
   try {
@@ -63,14 +59,6 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
 
     for (const row of registros) {
       try {
-        const hash = gerarHash(row.id || '', row.motorista || '', row.origem || '', row.destino || '', row.eta || '', row.eta_destino || '');
-        const jaEnviado = jaFoiEnviado(hash);
-
-        if (jaEnviado) {
-          resultados.pulados++;
-          continue;
-        }
-
         const mensagem = processarTemplate(templateConteudo, row);
         const telefone = limparTelefone(row.telefone || '');
 
@@ -90,7 +78,6 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           { headers: { apikey: apiKey } }
         );
 
-        registrarEnvio(hash, row.id || '', row.motorista || '', row.origem || '', row.destino || '', row.eta || '', row.eta_destino || '', telefone);
         resultados.enviados++;
 
         if (registros.length > 1) {

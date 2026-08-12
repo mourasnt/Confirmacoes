@@ -86,6 +86,16 @@ export default function DashboardPage() {
     setSendResult(null);
   };
 
+  const handleApplyFilter = () => {
+    loadData();
+  };
+
+  const handleClearFilter = () => {
+    setStartDate('');
+    setEndDate('');
+    loadData();
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -104,23 +114,23 @@ export default function DashboardPage() {
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Data Início</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="startDate">Data Início</label>
             <input
-              type="text"
+              id="startDate"
+              type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              placeholder="DD/MM/AAAA HH:MM"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Data Fim</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1" htmlFor="endDate">Data Fim</label>
             <input
-              type="text"
+              id="endDate"
+              type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              placeholder="DD/MM/AAAA HH:MM"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 h-11 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
             />
           </div>
           <div>
@@ -153,6 +163,32 @@ export default function DashboardPage() {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 pt-1">
+          <button
+            onClick={handleApplyFilter}
+            disabled={loading}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors text-sm font-medium"
+          >
+            {loading ? 'Aplicando...' : 'Aplicar Filtro'}
+          </button>
+          <button
+            onClick={handleClearFilter}
+            disabled={loading}
+            className="px-4 py-2 bg-white text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors text-sm font-medium"
+          >
+            Limpar Filtro
+          </button>
+          <p
+            aria-live="polite"
+            className="text-sm text-slate-500"
+            role="status"
+          >
+            {loading
+              ? 'Carregando registros...'
+              : `${data.length} registro${data.length !== 1 ? 's' : ''} carregado${data.length !== 1 ? 's' : ''}`}
+          </p>
         </div>
 
         {selected.length > 0 && (
