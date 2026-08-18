@@ -3,6 +3,37 @@ import { useState, useRef, useMemo, useCallback } from 'react';
 const ROW_HEIGHT = 44;
 const OVERSCAN = 8;
 
+const columnLabels = {
+  id_3zx: 'ID 3ZX',
+  lt: 'LT',
+  cliente: 'Cliente',
+  motorista: 'Motorista',
+  telefone: 'Telefone',
+  origem: 'Origem',
+  destino: 'Destino',
+  eta: 'ETA',
+  eta_origem: 'ETA Origem',
+  eta_destino: 'ETA Destino',
+  placa: 'Placa',
+  placa2: 'Placa 2',
+  status: 'Status',
+};
+
+const columnOrder = [
+  'id_3zx',
+  'origem',
+  'destino',
+  'eta_origem',
+  'eta_destino',
+  'lt',
+  'cliente',
+  'motorista',
+  'telefone',
+  'placa',
+  'placa2',
+  'status',
+];
+
 export default function DataTable({ data, selected, onToggle, onSelectAll }) {
   const scrollRef = useRef(null);
   const ticking = useRef(false);
@@ -14,10 +45,11 @@ export default function DataTable({ data, selected, onToggle, onSelectAll }) {
   const allSelected = total > 0 && selectedSet.size === total;
   const someSelected = selectedSet.size > 0 && selectedSet.size < total;
 
-  const columns = useMemo(
-    () => (total ? Object.keys(data[0]).filter((k) => k !== 'uid') : []),
-    [data, total]
-  );
+  const columns = useMemo(() => {
+    if (!total) return [];
+    const allKeys = Object.keys(data[0]).filter((k) => k !== 'uid');
+    return columnOrder.filter((col) => allKeys.includes(col));
+  }, [data, total]);
 
   const template = useMemo(
     () => `48px ${columns.map(() => 'minmax(150px, 1fr)').join(' ')}`,
@@ -73,9 +105,9 @@ export default function DataTable({ data, selected, onToggle, onSelectAll }) {
             {columns.map((col) => (
               <div
                 key={col}
-                className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap"
+                className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
               >
-                {col}
+                {columnLabels[col] || col}
               </div>
             ))}
           </div>
@@ -108,7 +140,7 @@ export default function DataTable({ data, selected, onToggle, onSelectAll }) {
                   {columns.map((col) => (
                     <div
                       key={col}
-                      className="p-3 text-slate-600 whitespace-nowrap truncate"
+                      className="p-3 text-slate-600"
                       title={row[col] || '-'}
                     >
                       {row[col] || '-'}

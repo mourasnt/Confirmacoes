@@ -1,6 +1,38 @@
 import { useState, useEffect } from 'react';
 import { fetchHistory } from '../../services/api.js';
 
+const columnLabels = {
+  id_3zx: 'ID 3ZX',
+  motorista: 'Motorista',
+  origem: 'Origem',
+  destino: 'Destino',
+  eta_origem: 'ETA Origem',
+  eta_destino: 'ETA Destino',
+  telefone: 'Telefone',
+  data_envio: 'Data Envio',
+  lt: 'LT',
+  cliente: 'Cliente',
+  placa: 'Placa',
+  placa2: 'Placa 2',
+  status: 'Status',
+};
+
+const columnOrder = [
+  'id_3zx',
+  'origem',
+  'destino',
+  'eta_origem',
+  'eta_destino',
+  'lt',
+  'cliente',
+  'motorista',
+  'telefone',
+  'placa',
+  'placa2',
+  'data_envio',
+  'status',
+];
+
 export default function HistoryPage() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,10 +46,10 @@ export default function HistoryPage() {
 
   if (loading) return <p className="text-slate-400">Carregando...</p>;
 
-  const columns = ['id_3zx', 'motorista', 'origem', 'destino', 'eta_origem', 'telefone', 'data_envio'];
+  const columns = columnOrder.filter((col) => history.some((row) => row[col] !== undefined));
 
   return (
-    <div>
+    <div className="w-full">
       <h1 className="text-2xl font-bold text-slate-800 mb-6">Histórico de Envios</h1>
 
       {history.length === 0 ? (
@@ -26,13 +58,16 @@ export default function HistoryPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full">
             <table className="w-full text-sm">
               <thead className="bg-slate-50">
                 <tr>
                   {columns.map((col) => (
-                    <th key={col} className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      {col}
+                    <th
+                      key={col}
+                      className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                    >
+                      {columnLabels[col] || col}
                     </th>
                   ))}
                 </tr>
@@ -41,7 +76,7 @@ export default function HistoryPage() {
                 {history.map((row) => (
                   <tr key={row.id} className="hover:bg-slate-50">
                     {columns.map((col) => (
-                      <td key={col} className="p-3 text-slate-600 whitespace-nowrap">
+                      <td key={col} className="p-3 text-slate-600">
                         {row[col] || '-'}
                       </td>
                     ))}

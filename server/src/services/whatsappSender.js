@@ -24,7 +24,7 @@ function processarTemplate(template, dados) {
     cliente: dados.cliente || '',
     placa: dados.placa || '',
     placa2: dados.placa2 || dados.placa || '',
-    id_3zx: dados.id || '',
+    id_3zx: dados.id_3zx || '',
     telefone: dados.telefone || '',
     eta_destino: dados.eta_destino || '',
     data: dados.eta || '',
@@ -63,7 +63,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
         const telefone = limparTelefone(row.telefone || '');
 
         if (!telefone || telefone.length < 12) {
-          resultados.erros.push({ id: row.id, erro: `Telefone inválido: ${row.telefone}` });
+          resultados.erros.push({ id: row.id_3zx || row.uid, erro: `Telefone inválido: ${row.telefone}` });
           continue;
         }
 
@@ -95,7 +95,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           responseBody: err.response?.data || err.message,
         };
         console.error('ERRO ENVIO:', JSON.stringify(requestInfo, null, 2));
-        resultados.erros.push({ id: row.id || 'unknown', erro: `[${err.response?.status || ''}] ${JSON.stringify(err.response?.data) || err.message}`, requestBody: reqBody, requestUrl: err.config?.url || '' });
+        resultados.erros.push({ id: row.id_3zx || row.uid || 'unknown', erro: `[${err.response?.status || ''}] ${JSON.stringify(err.response?.data) || err.message}`, requestBody: reqBody, requestUrl: err.config?.url || '' });
       }
     }
   } finally {

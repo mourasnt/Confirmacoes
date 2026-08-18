@@ -119,9 +119,10 @@ function seedDefaults() {
     { chave: 'coluna_origem', valor: process.env.COLUNA_ORIGEM || 'F' },
     { chave: 'coluna_destino', valor: process.env.COLUNA_DESTINO || 'G' },
     { chave: 'coluna_eta', valor: process.env.COLUNA_ETA || 'H' },
+    { chave: 'coluna_eta_origem', valor: process.env.COLUNA_ETA_ORIGEM || 'H' },
+    { chave: 'coluna_eta_destino', valor: process.env.COLUNA_ETA_DESTINO || 'AB' },
     { chave: 'coluna_placa', valor: process.env.COLUNA_PLACA || 'I' },
     { chave: 'coluna_placa2', valor: process.env.COLUNA_PLACA2 || 'J' },
-    { chave: 'coluna_eta_destino', valor: process.env.COLUNA_ETA_DESTINO || 'AB' },
     { chave: 'templates_padrao_inseridos', valor: '1' },
   ];
 

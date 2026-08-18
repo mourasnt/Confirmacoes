@@ -32,7 +32,7 @@ router.get('/', async (req, res, next) => {
     const reader = new GoogleSheetsReader(spreadsheetId);
 
     const colMap = {
-      id: config.coluna_id || process.env.COLUNA_ID || 'A',
+      id_3zx: config.coluna_id || process.env.COLUNA_ID || 'A',
       lt: config.coluna_lt || process.env.COLUNA_LT || 'B',
       cliente: config.coluna_cliente || process.env.COLUNA_CLIENTE || 'C',
       motorista: config.coluna_motorista || process.env.COLUNA_MOTORISTA || 'D',
@@ -40,6 +40,7 @@ router.get('/', async (req, res, next) => {
       origem: config.coluna_origem || process.env.COLUNA_ORIGEM || 'F',
       destino: config.coluna_destino || process.env.COLUNA_DESTINO || 'G',
       eta: config.coluna_eta || process.env.COLUNA_ETA || 'H',
+      eta_origem: config.coluna_eta_origem || process.env.COLUNA_ETA_ORIGEM || 'H',
       eta_destino: config.coluna_eta_destino || process.env.COLUNA_ETA_DESTINO || 'AB',
       placa: config.coluna_placa || process.env.COLUNA_PLACA || 'I',
       placa2: config.coluna_placa2 || process.env.COLUNA_PLACA2 || 'J',

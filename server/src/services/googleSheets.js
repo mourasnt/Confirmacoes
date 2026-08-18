@@ -184,7 +184,7 @@ export class GoogleSheetsReader {
 
     return dateFiltered.map((row, idx) => ({
       ...row,
-      uid: `${row.id || ''}_${idx}`,
+      uid: `${row.id_3zx || ''}_${idx}`,
       primeiro_nome: (row.motorista || '').split(' ')[0],
     }));
   }

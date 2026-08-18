@@ -51,7 +51,7 @@ export default function ConfigPage() {
   ];
 
   const columnFields = [
-    { key: 'coluna_id', label: 'ID' },
+    { key: 'coluna_id', label: 'ID 3ZX' },
     { key: 'coluna_lt', label: 'LT' },
     { key: 'coluna_cliente', label: 'Cliente' },
     { key: 'coluna_motorista', label: 'Motorista' },
@@ -59,6 +59,8 @@ export default function ConfigPage() {
     { key: 'coluna_origem', label: 'Origem' },
     { key: 'coluna_destino', label: 'Destino' },
     { key: 'coluna_eta', label: 'ETA' },
+    { key: 'coluna_eta_origem', label: 'ETA Origem' },
+    { key: 'coluna_eta_destino', label: 'ETA Destino' },
     { key: 'coluna_placa', label: 'Placa' },
     { key: 'coluna_placa2', label: 'Placa 2' },
   ];

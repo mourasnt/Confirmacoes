@@ -16,4 +16,4 @@ services:
 networks:
   evolution-net:
     name: evolution-net
-    external: true
+#    external: true

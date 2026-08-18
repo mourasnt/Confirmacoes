@@ -68,13 +68,12 @@ app.use('/api/data', dataRouter);
 
 const publicDir = join(__dirname, '..', 'public');
 if (existsSync(publicDir)) {
-  app.use(express.static(publicDir));
-  app.get('/{*path}', (req, res, next) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(join(publicDir, 'index.html'));
-    } else {
-      res.status(404).json({ error: 'Rota não encontrada' });
-    }
+  app.use('/whatsapp', express.static(publicDir));
+  app.get('/whatsapp/{*path}', (req, res) => {
+    res.sendFile(join(publicDir, 'index.html'));
+  });
+  app.get('/', (req, res) => {
+    res.redirect('/whatsapp');
   });
 }
 
