@@ -2,12 +2,13 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
+import SQLiteStoreFactory from 'better-sqlite3-session-store';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { existsSync } from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { initDB } from './database.js';
+import { initDB, getDB } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,10 +48,17 @@ app.use('/api/messages/send-batch', sendBatchLimiter);
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 
+initDB();
+const SQLiteStore = SQLiteStoreFactory(session);
 app.use(session({
   secret: process.env.SECRET_KEY || 'secret-dev-key',
   resave: false,
   saveUninitialized: false,
+  store: new SQLiteStore({
+    db: getDB(),
+    tableName: 'sessions',
+    expiration: 24 * 60 * 60 * 1000,
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
@@ -79,7 +87,6 @@ if (existsSync(publicDir)) {
 
 app.use(errorHandler);
 
-initDB();
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
