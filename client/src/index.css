@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  min-height: 100vh;
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100vh;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  *:focus-visible {
+    outline: none;
+  }
+}
+
+@layer components {
+  .scroll-thin::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+  }
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(203 213 225);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(148 163 184);
+    background-clip: padding-box;
+  }
+  .scroll-thin {
+    scrollbar-color: rgb(203 213 225) transparent;
+    scrollbar-width: thin;
+  }
 }

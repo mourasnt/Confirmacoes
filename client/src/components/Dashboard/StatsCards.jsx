@@ -1,20 +1,25 @@
 const cards = [
-  { key: 'total', label: 'Total', color: 'border-l-blue-500', bg: 'bg-blue-50' },
-  { key: 'pendentes', label: 'Pendentes', color: 'border-l-amber-500', bg: 'bg-amber-50' },
-  { key: 'enviados', label: 'Enviados', color: 'border-l-emerald-500', bg: 'bg-emerald-50' },
-  { key: 'selecionados', label: 'Selecionados', color: 'border-l-violet-500', bg: 'bg-violet-50' },
+  { key: 'total', label: 'Total', color: 'text-blue-700', dot: 'bg-blue-500' },
+  { key: 'pendentes', label: 'Pendentes', color: 'text-amber-700', dot: 'bg-amber-500' },
+  { key: 'enviados', label: 'Enviados', color: 'text-emerald-700', dot: 'bg-emerald-500' },
+  { key: 'selecionados', label: 'Selecionados', color: 'text-violet-700', dot: 'bg-violet-500' },
 ];
 
 export default function StatsCards({ stats }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
       {cards.map((card) => (
         <div
           key={card.key}
-          className={`${card.bg} ${card.color} border-l-4 rounded-xl p-4 shadow-sm`}
+          className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200/60 transition-shadow hover:shadow-md"
         >
-          <p className="text-sm text-slate-500 font-medium">{card.label}</p>
-          <p className="text-2xl font-bold text-slate-800 mt-1">
+          <div className="flex items-center gap-2">
+            <span className={`h-2 w-2 shrink-0 rounded-full ${card.dot}`} aria-hidden="true" />
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              {card.label}
+            </p>
+          </div>
+          <p className={`mt-2 text-2xl font-semibold tabular-nums ${card.color}`}>
             {stats[card.key] ?? 0}
           </p>
         </div>

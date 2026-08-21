@@ -249,6 +249,7 @@ export default function DashboardPage() {
         selected={selected}
         onToggle={handleToggle}
         onSelectAll={handleSelectAll}
+        loading={loading}
       />
 
       <SendOverlay open={sending || !!sendResult} result={sendResult} onClose={handleCloseOverlay} />

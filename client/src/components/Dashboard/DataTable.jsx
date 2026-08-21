@@ -152,7 +152,7 @@ export default function DataTable({ data, selected, onToggle, onSelectAll, loadi
                       onToggle(row.uid);
                     }
                   }}
-                  className={`group absolute left-0 right-0 grid cursor-pointer select-none items-stretch border-b border-slate-100 outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 ${
+                  className={`group absolute left-0 right-0 grid cursor-pointer select-none items-stretch overflow-hidden border-b border-slate-100 outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 ${
                     isSelected ? 'bg-indigo-50/80 hover:bg-indigo-100/60' : 'bg-white hover:bg-slate-50'
                   }`}
                   style={{ top: index * ROW_HEIGHT, height: ROW_HEIGHT, gridTemplateColumns: template }}
@@ -176,12 +176,12 @@ export default function DataTable({ data, selected, onToggle, onSelectAll, loadi
                       role="cell"
                       className={
                         ci === 0
-                          ? `sticky left-[44px] z-10 min-w-0 border-r border-slate-100 ${
+                          ? `sticky left-[44px] z-10 min-w-0 overflow-hidden border-r border-slate-100 ${
                               isSelected
                                 ? 'bg-indigo-50/95 group-hover:bg-indigo-100/70'
                                 : 'bg-white group-hover:bg-slate-50'
                             } ${stickyShadow}`
-                          : 'min-w-0'
+                          : 'min-w-0 overflow-hidden'
                       }
                     >
                       <Cell col={col} row={row} />
