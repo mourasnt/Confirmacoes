@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { z } from 'zod';
 import { obterTemplates, obterTemplate, salvarTemplate, atualizarTemplate, excluirTemplate } from '../database.js';
 
@@ -35,7 +35,7 @@ router.post('/', (req, res, next) => {
     const id = salvarTemplate(nome, conteudo, descricao);
     res.status(201).json({ id });
   } catch (err) {
-    if (err instanceof z.ZodError) return res.status(400).json({ error: err.errors });
+    if (err instanceof z.ZodError) return res.status(400).json({ error: err.issues });
     next(err);
   }
 });
@@ -46,7 +46,7 @@ router.put('/:id', (req, res, next) => {
     atualizarTemplate(req.params.id, nome, conteudo, descricao);
     res.json({ success: true });
   } catch (err) {
-    if (err instanceof z.ZodError) return res.status(400).json({ error: err.errors });
+    if (err instanceof z.ZodError) return res.status(400).json({ error: err.issues });
     next(err);
   }
 });

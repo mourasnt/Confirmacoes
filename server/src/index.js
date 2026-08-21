@@ -55,9 +55,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: new SQLiteStore({
-    db: getDB(),
-    tableName: 'sessions',
-    expiration: 24 * 60 * 60 * 1000,
+    client: getDB(),
+    expired: {
+      clear: true,
+    },
   }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
@@ -73,6 +74,9 @@ app.use('/api/templates', templatesRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/config', configRouter);
 app.use('/api/data', dataRouter);
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'Rota de API não encontrada' });
+});
 
 const publicDir = join(__dirname, '..', 'public');
 if (existsSync(publicDir)) {

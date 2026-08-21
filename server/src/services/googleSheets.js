@@ -41,6 +41,25 @@ function hasTimeComponent(str) {
   return str ? /:/.test(String(str)) : false;
 }
 
+function colToIndex(letter) {
+  let idx = 0;
+  for (const ch of String(letter).toUpperCase().replace(/[^A-Z]/g, '')) {
+    idx = idx * 26 + (ch.charCodeAt(0) - 64);
+  }
+  return idx - 1;
+}
+
+function indexToCol(idx) {
+  let n = idx + 1;
+  let s = '';
+  while (n > 0) {
+    const rem = (n - 1) % 26;
+    s = String.fromCharCode(65 + rem) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
 export class GoogleSheetsReader {
   constructor(spreadsheetId, credentialsFile) {
     this.spreadsheetId = spreadsheetId;
@@ -125,15 +144,16 @@ export class GoogleSheetsReader {
     const colLetters = Object.values(colMap).filter(Boolean);
     if (colLetters.length === 0) return [];
 
-    const startCol = colLetters.reduce((a, b) => a < b ? a : b);
-    const endCol = colLetters.reduce((a, b) => a > b ? a : b);
+    const minIdx = Math.min(...colLetters.map(colToIndex));
+    const startCol = indexToCol(minIdx);
+    const endCol = indexToCol(Math.max(...colLetters.map(colToIndex)));
     const colRange = `${startCol}:${endCol}`;
 
     const { headers, data } = await this.lerPlanilha(abaNome, colRange, linhaCabecalho, linhaInicioDados);
 
     const headerToKey = {};
     for (const [key, letter] of Object.entries(colMap)) {
-      const idx = letter.charCodeAt(0) - 65;
+      const idx = colToIndex(letter) - minIdx;
       if (headers[idx]) headerToKey[headers[idx]] = key;
     }
 

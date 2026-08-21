@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { requireAuth } from '../middleware/auth.js';
@@ -85,7 +85,7 @@ router.put('/', requireAuth, async (req, res, next) => {
     }
     res.json({ success: true });
   } catch (err) {
-    if (err instanceof z.ZodError) return res.status(400).json({ error: err.errors });
+    if (err instanceof z.ZodError) return res.status(400).json({ error: err.issues });
     next(err);
   }
 });

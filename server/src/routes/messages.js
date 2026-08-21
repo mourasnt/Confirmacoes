@@ -32,7 +32,7 @@ router.post('/send-batch', async (req, res, next) => {
     const resultado = await enviarConfirmacoes(registros, template.conteudo, instancia);
     res.json(resultado);
   } catch (err) {
-    if (err instanceof z.ZodError) return res.status(400).json({ error: err.errors });
+    if (err instanceof z.ZodError) return res.status(400).json({ error: err.issues });
     next(err);
   }
 });
