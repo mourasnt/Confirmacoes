@@ -80,12 +80,12 @@ app.use('/api', (req, res) => {
 
 const publicDir = join(__dirname, '..', 'public');
 if (existsSync(publicDir)) {
-  app.use('/whatsapp', express.static(publicDir));
-  app.get('/whatsapp/{*path}', (req, res) => {
-    res.sendFile(join(publicDir, 'index.html'));
+  app.use(express.static(publicDir));
+  app.get('/whatsapp', (req, res) => {
+    res.redirect('/');
   });
-  app.get('/', (req, res) => {
-    res.redirect('/whatsapp');
+  app.get('{*path}', (req, res) => {
+    res.sendFile(join(publicDir, 'index.html'));
   });
 }
 

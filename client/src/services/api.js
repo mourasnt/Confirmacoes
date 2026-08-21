@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const pathPrefix = window.location.pathname.startsWith('/whatsapp') ? '/whatsapp' : '';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${pathPrefix}/api`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
