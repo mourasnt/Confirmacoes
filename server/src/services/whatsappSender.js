@@ -71,9 +71,8 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
           `${apiUrl}/message/sendText/${encodeURIComponent(instancia)}`,
           {
             number: telefone,
-            text: mensagem,
-            delay: 1200,
-            linkPreview: false,
+            options: {"delay": 1200, "presence": "composing"},
+            text: mensagem
           },
           { headers: { apikey: apiKey } }
         );
