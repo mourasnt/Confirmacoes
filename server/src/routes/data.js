@@ -39,7 +39,7 @@ router.get('/', async (req, res, next) => {
       telefone: config.coluna_telefone || process.env.COLUNA_TELEFONE || 'E',
       origem: config.coluna_origem || process.env.COLUNA_ORIGEM || 'F',
       destino: config.coluna_destino || process.env.COLUNA_DESTINO || 'G',
-      eta: config.coluna_eta || process.env.COLUNA_ETA || 'H',
+      eta: config.coluna_eta || process.env.COLUNA_ETA || 'T',
       eta_origem: config.coluna_eta_origem || process.env.COLUNA_ETA_ORIGEM || 'T',
       eta_destino: config.coluna_eta_destino || process.env.COLUNA_ETA_DESTINO || 'AB',
       placa: config.coluna_placa || process.env.COLUNA_PLACA || 'I',

@@ -118,7 +118,7 @@ function seedDefaults() {
     { chave: 'coluna_telefone', valor: process.env.COLUNA_TELEFONE || 'E' },
     { chave: 'coluna_origem', valor: process.env.COLUNA_ORIGEM || 'G' },
     { chave: 'coluna_destino', valor: process.env.COLUNA_DESTINO || 'H' },
-    { chave: 'coluna_eta', valor: process.env.COLUNA_ETA || 'H' },
+    { chave: 'coluna_eta', valor: process.env.COLUNA_ETA || 'T' },
     { chave: 'coluna_eta_origem', valor: process.env.COLUNA_ETA_ORIGEM || 'T' },
     { chave: 'coluna_eta_destino', valor: process.env.COLUNA_ETA_DESTINO || 'AB' },
     { chave: 'coluna_placa', valor: process.env.COLUNA_PLACA || 'I' },
