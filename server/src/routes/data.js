@@ -24,6 +24,7 @@ router.get('/', async (req, res, next) => {
     const headerRow = parseInt(config.google_header_row || process.env.GOOGLE_HEADER_ROW || '1', 10);
     const dataStartRow = parseInt(config.linha_inicio_dados || process.env.GOOGLE_DATA_START_ROW || '2', 10);
     const { start, end } = req.query;
+    console.log('[FILTRO][rota /data] req.query.start=', JSON.stringify(start), 'req.query.end=', JSON.stringify(end));
 
     if (!spreadsheetId) {
       return res.status(400).json({ error: 'Google Spreadsheet ID não configurado' });

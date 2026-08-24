@@ -159,6 +159,8 @@ export class GoogleSheetsReader {
       const idx = colToIndex(letter) - minIdx;
       if (headers[idx]) headerToKey[headers[idx]] = key;
     }
+    console.log('[FILTRO] headers lidos da planilha:', JSON.stringify(headers));
+    console.log('[FILTRO] headerToKey (cabecalhoPlanilha -> chaveInterna):', JSON.stringify(headerToKey));
 
     const statusIdx = headers.findIndex((h) => h && /status|situa[çc][ãa]o/i.test(h));
     const statusHeader = statusIdx >= 0 ? headers[statusIdx] : null;
@@ -178,21 +180,52 @@ export class GoogleSheetsReader {
       return tel !== '' && tel !== '-';
     });
 
+    console.log('[FILTRO] amostra das 5 primeiras linhas (valores brutos + parse):');
+    mapped.slice(0, 5).forEach((r, i) => {
+      console.log(
+        `  [${i}] id=${r.id_3zx} tel=${r.telefone} | eta=${JSON.stringify(r.eta)} eta_origem=${JSON.stringify(r.eta_origem)} eta_destino=${JSON.stringify(r.eta_destino)}`
+      );
+      console.log(
+        `       parsed -> eta=${parseDateTime(r.eta)} eta_origem=${parseDateTime(r.eta_origem)} eta_destino=${parseDateTime(r.eta_destino)}`
+      );
+    });
+
     const start = dataInicio ? parseDateTime(dataInicio) : null;
     const end = dataFim ? parseDateTime(dataFim) : null;
     if (end && !hasTimeComponent(dataFim)) end.setHours(23, 59, 59, 999);
+    console.log('[FILTRO] entrada dataInicio=', JSON.stringify(dataInicio), 'dataFim=', JSON.stringify(dataFim));
+    console.log('[FILTRO] parsed  start=', start, 'end=', end);
 
-    const dateCols = ['eta', 'eta_origem', 'eta_destino'];
+    const dateCols = ['eta_origem'];
+    let passCount = 0;
+    let failCount = 0;
     const dateFiltered = comTelefone.filter((row) => {
       if (!start && !end) return true;
       const dates = dateCols.map((c) => parseDateTime(row[c])).filter(Boolean);
-      if (dates.length === 0) return false;
-      return dates.some((d) => {
+      if (dates.length === 0) {
+        failCount++;
+        if (failCount <= 5) {
+          console.log('  [FILTRO] EXCLUIDO (nenhuma data parseavel):', row.id_3zx,
+            { eta: row.eta, eta_origem: row.eta_origem, eta_destino: row.eta_destino });
+        }
+        return false;
+      }
+      const ok = dates.some((d) => {
         if (start && d < start) return false;
         if (end && d > end) return false;
         return true;
       });
+      if (ok) {
+        passCount++;
+      } else {
+        failCount++;
+        if (failCount <= 5) {
+          console.log('  [FILTRO] EXCLUIDO (fora do intervalo):', row.id_3zx, { dates, start, end });
+        }
+      }
+      return ok;
     });
+    console.log(`[FILTRO] comTelefone=${comTelefone.length} passaram=${passCount} excluidos=${failCount} total=${dateFiltered.length}`);
 
     dateFiltered.sort((a, b) => {
       const etaA = parseDateTime(a.eta);
