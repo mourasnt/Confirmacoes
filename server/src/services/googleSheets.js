@@ -228,8 +228,8 @@ export class GoogleSheetsReader {
     console.log(`[FILTRO] comTelefone=${comTelefone.length} passaram=${passCount} excluidos=${failCount} total=${dateFiltered.length}`);
 
     dateFiltered.sort((a, b) => {
-      const etaA = parseDateTime(a.eta);
-      const etaB = parseDateTime(b.eta);
+      const etaA = parseDateTime(a.eta_origem || a.eta);
+      const etaB = parseDateTime(b.eta_origem || b.eta);
       if (!etaA && !etaB) return 0;
       if (!etaA) return 1;
       if (!etaB) return -1;
