@@ -74,7 +74,7 @@ export async function enviarConfirmacoes(registros, templateConteudo, instancia)
             options: {"delay": 1200, "presence": "composing"},
             text: mensagem
           },
-          { headers: { apikey: apiKey } }
+          { headers: { "Content-Type": "application/json", apikey: apiKey } }
         );
 
         resultados.enviados++;
