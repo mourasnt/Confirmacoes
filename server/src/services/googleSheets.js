@@ -25,11 +25,14 @@ function parseDateTime(str) {
     return new Date(+y, +mo - 1, +d, +h, +mi, +s);
   }
 
-  // DMY: DD/MM/YYYY [HH:MM[:SS]] — hora/minuto com 1 ou 2 dígitos
-  m = clean.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[\sT](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/);
+  // DMY: DD/MM[/YYYY] [HH:MM[:SS]] — ano opcional (assume ano atual)
+  m = clean.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?(?:[\sT](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/);
   if (m) {
-    const [, d, mo, y, h = 0, mi = 0, s = 0] = m;
-    return new Date(+y, +mo - 1, +d, +h, +mi, +s);
+    const [, d, mo, yRaw, h = 0, mi = 0, s = 0] = m;
+    let y = +yRaw;
+    if (!yRaw) y = new Date().getFullYear();
+    else if (y < 100) y += 2000;
+    return new Date(y, +mo - 1, +d, +h, +mi, +s);
   }
 
   // fallback: parser nativo do navegador/Node
@@ -175,22 +178,20 @@ export class GoogleSheetsReader {
       return tel !== '' && tel !== '-';
     });
 
+    const start = dataInicio ? parseDateTime(dataInicio) : null;
+    const end = dataFim ? parseDateTime(dataFim) : null;
+    if (end && !hasTimeComponent(dataFim)) end.setHours(23, 59, 59, 999);
+
+    const dateCols = ['eta', 'eta_origem', 'eta_destino'];
     const dateFiltered = comTelefone.filter((row) => {
-      if (!dataInicio && !dataFim) return true;
-      const eta = parseDateTime(row.eta);
-      if (!eta) return true;
-      if (dataInicio) {
-        const start = parseDateTime(dataInicio);
-        if (start && eta < start) return false;
-      }
-      if (dataFim) {
-        const end = parseDateTime(dataFim);
-        if (end) {
-          if (!hasTimeComponent(dataFim)) end.setHours(23, 59, 59, 999);
-          if (eta > end) return false;
-        }
-      }
-      return true;
+      if (!start && !end) return true;
+      const dates = dateCols.map((c) => parseDateTime(row[c])).filter(Boolean);
+      if (dates.length === 0) return false;
+      return dates.some((d) => {
+        if (start && d < start) return false;
+        if (end && d > end) return false;
+        return true;
+      });
     });
 
     dateFiltered.sort((a, b) => {
