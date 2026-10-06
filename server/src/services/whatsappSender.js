@@ -1,6 +1,41 @@
 import axios from 'axios';
 import { obterConfiguracao } from '../database.js';
 
+// Funções de formatação de data (copiadas do cliente para o servidor)
+const pad = (n) => String(n).padStart(2, '0');
+
+function parseSheetDate(value) {
+  if (value == null || value === '') return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  const clean = String(value).trim();
+  if (!clean) return null;
+
+  let m = clean.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s](\d{1,2}):(\d{2}))?/);
+  if (m) {
+    const [, y, mo, d, h = '0', mi = '0'] = m;
+    const date = new Date(+y, +mo - 1, +d, +h, +mi);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  m = clean.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?(?:[T\s](\d{1,2}):(\d{2}))?/);
+  if (m) {
+    const [, d, mo, y, h = '0', mi = '0'] = m;
+    const year = y ? +y : new Date().getFullYear();
+    const date = new Date(year, +mo - 1, +d, +h, +mi);
+    return Number.isNaN(date.getTime()) || date.getMonth() !== +mo - 1 ? null : date;
+  }
+
+  const t = Date.parse(clean);
+  return Number.isNaN(t) ? null : new Date(t);
+}
+
+function formatDateTime(value) {
+  if (!value) return '';
+  const d = parseSheetDate(value);
+  if (!d) return String(value);
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function limparTelefone(telefone) {
   let num = telefone.replace(/\D/g, '');
   if (num.length === 10 || num.length === 11) {
@@ -20,14 +55,14 @@ function processarTemplate(template, dados) {
     lt: dados.lt || '',
     origem: dados.origem || '',
     destino: dados.destino || '',
-    eta_origem: dados.eta || '',
+    eta_origem: dados.eta ? formatDateTime(dados.eta) : '',
     cliente: dados.cliente || '',
     placa: dados.placa || '',
     placa2: dados.placa2 || dados.placa || '',
     id_3zx: dados.id_3zx || '',
     telefone: dados.telefone || '',
-    eta_destino: dados.eta_destino || '',
-    data: dados.eta || '',
+    eta_destino: dados.eta_destino ? formatDateTime(dados.eta_destino) : '',
+    data: dados.eta ? formatDateTime(dados.eta) : '',
     n_carga: dados.lt || '',
     operacao: dados.operacao || '',
   };
