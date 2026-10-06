@@ -154,13 +154,16 @@ export class GoogleSheetsReader {
 
     const { headers, data } = await this.lerPlanilha(abaNome, colRange, linhaCabecalho, linhaInicioDados);
 
-    const headerToKey = {};
+    const headerToKeys = {};
     for (const [key, letter] of Object.entries(colMap)) {
       const idx = colToIndex(letter) - minIdx;
-      if (headers[idx]) headerToKey[headers[idx]] = key;
+      if (headers[idx]) {
+        // Mesma coluna pode alimentar mais de uma chave (ex.: eta e eta_origem)
+        (headerToKeys[headers[idx]] ||= []).push(key);
+      }
     }
     console.log('[FILTRO] headers lidos da planilha:', JSON.stringify(headers));
-    console.log('[FILTRO] headerToKey (cabecalhoPlanilha -> chaveInterna):', JSON.stringify(headerToKey));
+    console.log('[FILTRO] headerToKeys (cabecalhoPlanilha -> chavesInternas):', JSON.stringify(headerToKeys));
 
     const statusIdx = headers.findIndex((h) => h && /status|situa[çc][ãa]o/i.test(h));
     const statusHeader = statusIdx >= 0 ? headers[statusIdx] : null;
@@ -168,8 +171,8 @@ export class GoogleSheetsReader {
     const mapped = data.map((row, i) => {
       const obj = {};
       for (const [header, value] of Object.entries(row)) {
-        const key = headerToKey[header];
-        if (key) obj[key] = value;
+        const keys = headerToKeys[header];
+        if (keys) for (const k of keys) obj[k] = value;
       }
       obj.status = statusHeader ? (data[i][statusHeader] || '') : '';
       return obj;

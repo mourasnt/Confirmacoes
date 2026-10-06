@@ -48,21 +48,21 @@ function limparTelefone(telefone) {
   return num;
 }
 
-function processarTemplate(template, dados) {
+export function processarTemplate(template, dados) {
   const vars = {
     motorista: dados.motorista || '',
     primeiro_nome: (dados.motorista || '').split(' ')[0] || '',
     lt: dados.lt || '',
     origem: dados.origem || '',
     destino: dados.destino || '',
-    eta_origem: dados.eta ? formatDateTime(dados.eta) : '',
+    eta_origem: formatDateTime(dados.eta_origem || dados.eta || ''),
     cliente: dados.cliente || '',
     placa: dados.placa || '',
     placa2: dados.placa2 || dados.placa || '',
     id_3zx: dados.id_3zx || '',
     telefone: dados.telefone || '',
-    eta_destino: dados.eta_destino ? formatDateTime(dados.eta_destino) : '',
-    data: dados.eta ? formatDateTime(dados.eta) : '',
+    eta_destino: formatDateTime(dados.eta_destino || ''),
+    data: formatDateTime(dados.eta || dados.eta_origem || ''),
     n_carga: dados.lt || '',
     operacao: dados.operacao || '',
   };
